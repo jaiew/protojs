@@ -1020,7 +1020,9 @@ if (typeof(ArrayBuffer) !== "undefined" && typeof(Uint8Array) !== "undefined") {
 	var slice = "slice";
 	var testBlob;
 	try {
-	    testBlob = new self.Blob([new ArrayBuffer(1)]);
+	    //testBlob = new self.Blob([new ArrayBuffer(1)]);
+      //NOTE(jaiew): the above has been deprecated so this should work going forward.
+      testBlob = new self.Blob([new Uint8Array(1)]);
 	    useBlobCons = true;
 	} catch (e) {
         /**
@@ -1035,16 +1037,18 @@ if (typeof(ArrayBuffer) !== "undefined" && typeof(Uint8Array) !== "undefined") {
         }
 	}
 	if (testBlob && (useBlobCons || BlobBuilder)) {
-	    if (testBlob.webkitSlice) {
+	    if (testBlob.webkitSlice && !testBlob.slice) {
 		slice = "webkitSlice";
 	    }
-	    if (testBlob.mozSlice) {
+	    if (testBlob.mozSlice && !testBlob.slice) {
 		slice = "mozSlice";
 	    }
 	    PROTO.ArrayBufferStream.prototype.getBlob = function() {
 		var fullBlob;
 		if (useBlobCons) {
-		    fullBlob = new self.Blob([this.array_buffer_]);
+		    //fullBlob = new self.Blob([this.array_buffer_]);
+        //NOTE(jaiew): the above has been deprecated so this should work going forward.
+		    fullBlob = new self.Blob([new Uint8Array(this.array_buffer_)]);
 		} else {
 		    var blobBuilder = new BlobBuilder();
 		    blobBuilder.append(this.array_buffer_);

@@ -2,9 +2,16 @@ INPUTDIR=protocol
 OUTPUTDIR=output
 
 UNAME = $(shell uname)
+ARCH = $(shell uname -m)
 
 ifeq ($(UNAME),Darwin)
-FLAGS += -arch i386
+  ifeq ($(ARCH),x86_64)
+    FLAGS += -arch x86_64
+  else  
+    FLAGS += -arch i386 -static
+  endif
+else
+  FLAGS += -static
 endif
 
 ALLSOURCES=$(wildcard $(INPUTDIR)/*.pbj) $(wildcard $(INPUTDIR)/*.proto)
@@ -22,7 +29,7 @@ $(OUTPUTDIR)/%.pbj.js: $(INPUTDIR)/%.pbj pbj
 	./pbj $< $@
 
 pbj : main.cpp ProtoJSLexer.o ProtoJSParser.o ProtoJSParseUtil.o
-	g++ $(FLAGS) -std=c++98 -Wall -static -g -o pbj -Iantlr-$(ANTLRVER)/include -Lantlr-$(ANTLRVER)/lib -I/usr/local/include -L/usr/local/lib main.cpp ProtoJSLexer.o ProtoJSParser.o ProtoJSParseUtil.o -lantlr3c || \
+	g++ $(FLAGS) -std=c++98 -Wall -g -o pbj -Iantlr-$(ANTLRVER)/include -Lantlr-$(ANTLRVER)/lib -I/usr/local/include -L/usr/local/lib main.cpp ProtoJSLexer.o ProtoJSParser.o ProtoJSParseUtil.o -lantlr3c || \
         g++ $(FLAGS) -g -o pbj -Iantlr-$(ANTLRVER)/include -Lantlr-$(ANTLRVER)/lib -I/usr/local/include -L/usr/local/lib main.cpp ProtoJSLexer.o ProtoJSParser.o ProtoJSParseUtil.o antlr-$(ANTLRVER)/lib/libantlr3c.a || \
         g++ $(FLAGS) -g -o pbj -Iantlr-$(ANTLRVER)/include -Lantlr-$(ANTLRVER)/lib main.cpp ProtoJSLexer.o ProtoJSParser.o ProtoJSParseUtil.o -lantlr3c
 
